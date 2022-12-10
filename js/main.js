@@ -14,26 +14,18 @@
     map = new mapboxgl.Map({
       container: 'map', // container ID
       style: 'mapbox://styles/mapbox/light-v11',
-      center: [-122.2, 47.58], // Centered on Seattle
-      zoom: 9.4
+      center: [-122.3, 47.62], // Centered on Seattle
+      zoom: 10.2
     });
-    geojsonFetch();
-  }
-
-  // Load and display the data
-  async function geojsonFetch() {
-    let response = await fetch('assets/ACS2017_CensusTracts2010.geojson');
-    let demographics = await response.json();
-    map.on('load', function loadingData() { // loads in the demographics data
-      map.addSource('demographics', {
-        type: 'geojson',
-        data: demographics
-      });
+    map.on('load', () => {
 
       map.addLayer({ // draws the demographics onto the map
         id: 'demographics-layer',
         type: 'fill',
-        source: 'demographics',
+        source: {
+          type: 'geojson',
+          data: 'assets/ACS2017_CensusTracts2010.geojson'
+        },
         paint: {
           'fill-color': [
             'step',
@@ -52,6 +44,19 @@
             ],
           'fill-outline-color': 'black',
           'fill-opacity': 0.6
+        }
+      });
+
+      map.addLayer({ // draw the OIS data
+        id: 'ois-layer',
+        type: 'circle',
+        source: {
+          type: 'geojson',
+          data: 'assets/OISCleaned.geojson'
+        },
+        paint: {
+          'circle-radius': 4,
+          'circle-color': 'black'
         }
       });
     })
